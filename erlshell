@@ -1,0 +1,30 @@
+#!/usr/bin/env escript -c
+
+main(_Opts) ->
+    recompile_sources(),
+    read_lines(1).
+
+read_lines(L) ->
+    case io:get_line(integer_to_list(L) ++ "> ") of
+        eof -> ok;
+        Line ->  
+            exec_line(Line),
+            read_lines(L + 1)
+    end.
+
+exec_line(Line0) ->
+    try
+        [Line] = string:tokens(Line0, "\n"),
+        {ok, Tokens, _} = calc:string(Line),
+        io:format("Tokens = ~p\n", [Tokens]),
+        {ok, Result} = calc_parser:parse(Tokens),
+        io:format("~p\n", [Result])
+    catch _:Error ->
+        io:format("Error: ~p,\nStack = ~p\n", [Error, erlang:get_stacktrace()])
+    end.
+
+recompile_sources() ->
+    {ok, _} = leex:file("calc.xrl"),
+    compile:file("calc"),
+    {ok, _} = yecc:file("calc_parser.yrl"),
+    compile:file("calc_parser").

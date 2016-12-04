@@ -1,0 +1,4 @@
+*.beam
+calc.erl
+calc_parser.erl
+.*.swp
