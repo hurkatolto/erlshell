@@ -1,7 +1,7 @@
 Nonterminals expr parameters.
 
-Terminals '=' '+' '-' '*' '/' '(' ')' ',' ':' '[' ']' '"' number 
-          word.
+Terminals '=' '+' '-' '*' '/' '(' ')' ',' ':' '[' ']' '"' '{' '}' number 
+          word string atom.
 
 Rootsymbol expr.
 
@@ -22,8 +22,12 @@ Left    30   ':'.       %% :
 %% Expressions
 
 %% List expressions
-expr  ->       '"' word '"'            : extract_string('$2').
+expr  ->       string                  : extract_string('$1').
 expr  ->       '[' parameters ']'      : '$2'.       %% reuse 'parameters from next section
+expr  ->       '{' parameters '}'      : list_to_tuple('$2').       %% reuse 'parameters from next section
+
+%% atom expression
+expr  ->       atom                  : extract_atom('$1').
 
 %% Define function calls, with parsing the parameters
 expr  ->       word ':' word '(' parameters ')' : call_function('$1', '$3', '$5').
@@ -32,6 +36,7 @@ parameters ->  expr                    : ['$1'].
 parameters ->  expr ',' parameters     : ['$1' | '$3'].
 
 %% handling expressions with the most basic operators
+expr  ->       '$empty'    : ok.
 expr  -> '(' expr ')'      : '$2'.
 expr  -> number            : get_number('$1').
 expr  -> word              : get_var('$1').
@@ -80,4 +85,6 @@ call_function({word, _Line, Name}, Value)  ->
 
 sqrt(V) -> math:sqrt(V).
 
-extract_string({word, _Line, Chars}) -> Chars.
+extract_string({_, _Line, Chars}) -> Chars.
+
+extract_atom({_, _Line, Atom}) -> Atom.
