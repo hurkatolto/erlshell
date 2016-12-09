@@ -14,7 +14,8 @@ Rules.
 '([^'\\]++|\\.)*'     : {token, {atom, TokenLine, list_to_atom(string:sub_string(TokenChars, 2, length(TokenChars)-1))}}.
 
 {OPERATOR}            : {token, {list_to_atom(TokenChars), TokenLine}}.
-[A-Za-z~]+            : {token, {word, TokenLine, TokenChars}}.
+[a-z]+[A-Za-z_0-9]*   : {token, {word, TokenLine, TokenChars}}.
+[A-Z]+[A-Za-z_0-9]*   : {token, {var, TokenLine, TokenChars}}.
 {INT}                 : {token, {number, TokenLine, list_to_integer(TokenChars)}}.
 {FLOAT}               : {token, {number, TokenLine, to_float(TokenChars)}}.
 [\s\t\r]+             : skip_token.

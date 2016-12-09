@@ -1,7 +1,7 @@
-Nonterminals expr parameters.
+Nonterminals expr parameters word_or_atom.
 
 Terminals '=' '+' '-' '*' '/' '(' ')' ',' ':' '[' ']' '"' '{' '}' number 
-          word string atom.
+          word string atom var.
 
 Rootsymbol expr.
 
@@ -30,8 +30,8 @@ expr  ->       '{' parameters '}'      : list_to_tuple('$2').       %% reuse 'pa
 expr  ->       atom                  : extract_atom('$1').
 
 %% Define function calls, with parsing the parameters
-expr  ->       word ':' word '(' parameters ')' : call_function('$1', '$3', '$5').
-expr  ->       word '(' parameters ')' : call_function('$1', '$3').
+expr  ->       word_or_atom ':' word_or_atom '(' parameters ')' : call_function('$1', '$3', '$5').
+expr  ->       word_or_atom '(' parameters ')' : call_function('$1', '$3').
 parameters ->  expr                    : ['$1'].
 parameters ->  expr ',' parameters     : ['$1' | '$3'].
 
@@ -39,14 +39,18 @@ parameters ->  expr ',' parameters     : ['$1' | '$3'].
 expr  ->       '$empty'    : ok.
 expr  -> '(' expr ')'      : '$2'.
 expr  -> number            : get_number('$1').
-expr  -> word              : get_var('$1').
+expr  -> word              : list_to_atom(extract_atom('$1')).
+expr  -> var               : get_var('$1').
 expr  -> expr '+' expr     : '$1' + '$3'.
 expr  -> expr '-' expr     : '$1' - '$3'.
 expr  -> expr '*' expr     : '$1' * '$3'.
 expr  -> expr '/' expr     : '$1' / '$3'.
-expr  -> word '=' expr     : store_var('$1', '$3').
+expr  -> var  '=' expr     : store_var('$1', '$3').
 expr  -> '-'expr           : - '$2'.
 expr  -> '+'expr           : + '$2'.
+
+word_or_atom ->  word      : list_to_atom(extract_string('$1')).
+word_or_atom ->  atom      : extract_string('$1').
 
 Erlang code.
 
@@ -73,14 +77,10 @@ get_vars() ->
         Vars -> Vars
     end.
 
-call_function({word, _Line, ModName}, {word, _Line, FuncName}, Value)  ->
-    io:format("Value = ~p~n", [Value]),
-    Mod = list_to_atom(ModName),
-    Function = list_to_atom(FuncName),
+call_function(Mod, Function, Value)  ->
     erlang:apply(Mod, Function, Value).
 
-call_function({word, _Line, Name}, Value)  ->
-    Function = list_to_atom(Name),
+call_function(Function, Value)  ->
     erlang:apply(?MODULE, Function, Value).
 
 sqrt(V) -> math:sqrt(V).

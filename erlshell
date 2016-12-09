@@ -17,11 +17,7 @@ exec_line(Line0) ->
         Line = chunk_nl(Line0),
         {ok, Tokens, _} = calc:string(Line),
         io:format("Tokens = ~p\n", [Tokens]),
-        Tokens1 = lists:foldl(fun(Op, Acc) ->
-                        delete_operators_between(Acc, Op)
-                    end, Tokens, ['"', '\'']),
-        io:format("Tokens1 = ~p~n", [Tokens1]),
-        {ok, Result} = calc_parser:parse(Tokens1),
+        {ok, Result} = calc_parser:parse(Tokens),
         io:format("~p\n", [Result])
     catch _:Error ->
         io:format("Error: ~p,\nStack = ~p\n", [Error, erlang:get_stacktrace()])
@@ -32,18 +28,6 @@ recompile_sources() ->
     compile:file("calc"),
     {ok, _} = yecc:file("calc_parser.yrl"),
     compile:file("calc_parser").
-
-delete_operators_between(Tokens, _Operator) ->
-    Tokens.
-%    dob(Tokens, Operator, [], false).
-
-%dob([], _Op, Res, InOp) ->
-%    lists:reverse(Res);
-%dob([{O, _} = Tok | T], Op, Res, false) when O =:= Op ->
-%    dob(T, Op, [Tok | Res], true);
-%dob([Tok | T], Op, Res, false) ->
-%    dob(T, Op, [Tok | Res], 
-%dob([{
 
 chunk_nl(L) ->
     case string:tokens(L, "\n") of
