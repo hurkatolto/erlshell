@@ -5,3 +5,4 @@ src/erlshell_parser.erl
 src/.*.swp
 erlshell
 .dialyzer_plt
+.eunit

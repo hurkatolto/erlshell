@@ -1,6 +1,7 @@
 -module(erlshell).
 
--export([main/1]).
+-export([main/1,
+         exec_line/1]).
 
 main(_Opts) ->
     read_lines(1).
@@ -19,7 +20,8 @@ exec_line(Line0) ->
         {ok, Tokens, _} = erlshell_lexer:string(Line),
         io:format("Tokens = ~p\n", [Tokens]),
         {ok, Result} = erlshell_parser:parse(Tokens),
-        io:format("~p\n", [Result])
+        io:format("~p\n", [Result]),
+        {ok, Result}
     catch _:Error ->
         io:format("Error: ~p,\nStack = ~p\n", [Error, erlang:get_stacktrace()])
     end.
