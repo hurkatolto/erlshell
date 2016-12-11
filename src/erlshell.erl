@@ -1,13 +1,14 @@
-#!/usr/bin/env escript -c
+-module(erlshell).
+
+-export([main/1]).
 
 main(_Opts) ->
-    recompile_sources(),
     read_lines(1).
 
 read_lines(L) ->
     case io:get_line(integer_to_list(L) ++ "> ") of
         eof -> ok;
-        Line ->  
+        Line ->
             exec_line(Line),
             read_lines(L + 1)
     end.
@@ -15,19 +16,13 @@ read_lines(L) ->
 exec_line(Line0) ->
     try
         Line = chunk_nl(Line0),
-        {ok, Tokens, _} = calc:string(Line),
+        {ok, Tokens, _} = erlshell_lexer:string(Line),
         io:format("Tokens = ~p\n", [Tokens]),
-        {ok, Result} = calc_parser:parse(Tokens),
+        {ok, Result} = erlshell_parser:parse(Tokens),
         io:format("~p\n", [Result])
     catch _:Error ->
         io:format("Error: ~p,\nStack = ~p\n", [Error, erlang:get_stacktrace()])
     end.
-
-recompile_sources() ->
-    {ok, _} = leex:file("calc.xrl"),
-    compile:file("calc"),
-    {ok, _} = yecc:file("calc_parser.yrl"),
-    compile:file("calc_parser").
 
 chunk_nl(L) ->
     case string:tokens(L, "\n") of

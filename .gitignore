@@ -1,4 +1,7 @@
 *.beam
-calc.erl
-calc_parser.erl
+src/erlshell_lexer.erl
+src/erlshell_parser.erl
 .*.swp
+src/.*.swp
+erlshell
+.dialyzer_plt
