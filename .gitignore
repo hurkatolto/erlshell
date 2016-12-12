@@ -6,3 +6,4 @@ src/.*.swp
 erlshell
 .dialyzer_plt
 .eunit
+.rebar/

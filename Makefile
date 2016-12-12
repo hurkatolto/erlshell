@@ -1,4 +1,4 @@
-SHELL := /bin/bash
+SHELL=/bin/bash
 
 DIALYZER_APPS = \
 	erts stdlib crypto public_key inets xmerl sasl tools kernel
@@ -22,13 +22,15 @@ clean:
 
 dialyze:	compile
 	dialyzer --plt .dialyzer_plt  -pa ebin -Wno_return \
-		     --apps ebin
+		     --apps ebin | tee dialyzer_output.txt > /dev/null
+	./filter_output.sh dialyzer_output.txt dialyzer_filter_warnings.txt
 
 .create_plt:
 	dialyzer --no_check_plt --build_plt  --output_plt .dialyzer_plt \
 		     --apps $(DIALYZER_APPS)
 
 xref:		compile
-	./rebar xref
+	./rebar xref | tee xref_output.txt > /dev/null
+	./filter_output.sh xref_output.txt xref_filter_warnings.txt
 
 check: xref dialyze
