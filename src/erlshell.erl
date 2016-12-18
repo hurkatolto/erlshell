@@ -1,9 +1,11 @@
 -module(erlshell).
 
 -export([main/1,
-         exec_line/1]).
+         exec_line/1,
+         store_shell_commands/0]).
 
 main(_Opts) ->
+    store_shell_commands(),
     read_lines(1).
 
 read_lines(L) ->
@@ -30,4 +32,14 @@ chunk_nl(L) ->
     case string:tokens(L, "\n") of
         [Line] -> Line;
         [] -> []
+    end.
+
+store_shell_commands() ->
+    erlang:put(shell_default_functions, get_module_functions(shell_default)),
+    erlang:put(user_default_function, get_module_functions(user_default)).
+
+get_module_functions(Module) ->
+    case catch Module:module_info(exports) of
+        {'EXIT', _} -> [];
+        Functions -> Functions
     end.
