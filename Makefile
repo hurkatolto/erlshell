@@ -33,4 +33,4 @@ xref:		compile
 	./rebar xref | tee xref_output.txt > /dev/null
 	./filter_output.sh xref_output.txt xref_filter_warnings.txt
 
-check: xref dialyze
+check: xref dialyze eunit

@@ -25,4 +25,3 @@ Erlang code.
 
 to_float([$. | Chars]) -> list_to_float("0." ++ Chars);
 to_float(Chars) -> list_to_float(Chars).
-
