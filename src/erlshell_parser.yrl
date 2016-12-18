@@ -1,6 +1,6 @@
 Nonterminals expr parameters word_or_atom.
 
-Terminals '=' '+' '-' '*' '/' '(' ')' ',' ':' '[' ']' '"' '{' '}' number 
+Terminals '=' '+' '-' '*' '/' '(' ')' ',' ':' '[' ']' '{' '}' number 
           word string atom var.
 
 Rootsymbol expr.
@@ -12,7 +12,6 @@ Left    1    '('.
 Left    2    ')'.
 Left    3    '['.
 Left    4    ']'.
-Left    5    '"'.
 Left    6    '+'.       %% +
 Left    10   '-'.       %% -
 Left    15   '*'.       %% *
@@ -32,11 +31,11 @@ expr  ->       atom                  : extract_atom('$1').
 %% Define function calls, with parsing the parameters
 expr  ->       word_or_atom ':' word_or_atom '(' parameters ')' : call_function('$1', '$3', '$5').
 expr  ->       word_or_atom '(' parameters ')' : call_function('$1', '$3').
+parameters ->  '$empty'                : [].
 parameters ->  expr                    : ['$1'].
 parameters ->  expr ',' parameters     : ['$1' | '$3'].
 
 %% handling expressions with the most basic operators
-expr  ->       '$empty'    : ok.
 expr  -> '(' expr ')'      : '$2'.
 expr  -> number            : get_number('$1').
 expr  -> word              : list_to_atom(extract_atom('$1')).
@@ -77,11 +76,31 @@ get_vars() ->
         Vars -> Vars
     end.
 
-call_function(Mod, Function, Value)  ->
-    erlang:apply(Mod, Function, Value).
+call_function(Mod, Function, Parameters)  ->
+    io:format("~p ~p call_function: '~p' ~n", [?MODULE, ?LINE, call_function]),
+    erlang:apply(Mod, Function, Parameters).
 
-call_function(Function, Value)  ->
-    erlang:apply(?MODULE, Function, Value).
+%%
+%% Shell command. Try shell_default module first, if the functions is not there,
+%% try user_default. If function is not even in that module throw an exception.
+%%
+call_function(Function, Parameters)  ->
+    io:format("~p ~p Parameters: '~p' ~n", [?MODULE, ?LINE, Parameters]),
+    io:format("~p ~p call_function: '~p' ~n", [?MODULE, ?LINE, call_function]),
+    PLength = length(Parameters),
+    case lists:member({Function, PLength}, erlang:get(shell_default_functions)) of
+        true ->
+            erlang:apply(shell_default, Function, Parameters);
+        false ->
+            case lists:member({Function, PLength}, erlang:get(user_default_functions)) of
+                true ->
+                    erlang:apply(user_default, Function, Parameters);
+                false ->
+                    throw(lists:flatten(io_lib:format(
+                                            "undefined shell command ~p/~p",
+                                            [Function, PLength])))
+            end
+    end.
 
 sqrt(V) -> math:sqrt(V).
 
