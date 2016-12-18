@@ -1,7 +1,7 @@
 Nonterminals expr parameters word_or_atom.
 
-Terminals '=' '+' '-' '*' '/' '(' ')' ',' ':' '[' ']' '{' '}' number 
-          word string atom var.
+Terminals '=' '+' '-' '*' '/' '(' ')' ',' ':' '[' ']' '{' '}' '<' '>' number 
+          'andalso' 'orelse' 'and' 'or' word string atom var.
 
 Rootsymbol expr.
 
@@ -12,12 +12,13 @@ Left    1    '('.
 Left    2    ')'.
 Left    3    '['.
 Left    4    ']'.
-Left    6    '+'.       %% +
-Left    10   '-'.       %% -
-Left    15   '*'.       %% *
-Left    20   '/'.       %% /
-Left    25   ','.       %% ,
-Left    30   ':'.       %% :
+Left    6    '+'.
+Left    10   '-'.
+Left    15   '*'.
+Left    20   '/'.
+Left    25   ','.
+Left    30   ':'.
+
 %% Expressions
 
 %% List expressions
@@ -36,17 +37,30 @@ parameters ->  expr                    : ['$1'].
 parameters ->  expr ',' parameters     : ['$1' | '$3'].
 
 %% handling expressions with the most basic operators
-expr  -> '(' expr ')'      : '$2'.
-expr  -> number            : get_number('$1').
-expr  -> word              : list_to_atom(extract_atom('$1')).
-expr  -> var               : get_var('$1').
-expr  -> expr '+' expr     : '$1' + '$3'.
-expr  -> expr '-' expr     : '$1' - '$3'.
-expr  -> expr '*' expr     : '$1' * '$3'.
-expr  -> expr '/' expr     : '$1' / '$3'.
-expr  -> var  '=' expr     : store_var('$1', '$3').
-expr  -> '-'expr           : - '$2'.
-expr  -> '+'expr           : + '$2'.
+expr  -> '(' expr ')'           : '$2'.
+expr  -> number                 : get_number('$1').
+expr  -> word                   : list_to_atom(extract_atom('$1')).
+expr  -> var                    : get_var('$1').
+expr  -> expr '=' '=' expr      : '$1' == '$4'.
+expr  -> expr '=' ':' '=' expr  : '$1' =:= '$5'.
+expr  -> expr '=' '/' '=' expr  : '$1' =/= '$5'.
+expr  -> expr '<' expr          : '$1' < '$3'.
+expr  -> expr '>' expr          : '$1' > '$3'.
+expr  -> expr '>' '=' expr      : '$1' >= '$4'.
+expr  -> expr '=' '<' expr      : '$1' =< '$4'.
+expr  -> expr '+' expr          : '$1' + '$3'.
+expr  -> expr '-' expr          : '$1' - '$3'.
+expr  -> expr '*' expr          : '$1' * '$3'.
+expr  -> expr '/' expr          : '$1' / '$3'.
+expr  -> var  '=' expr          : store_var('$1', '$3').
+expr  -> '-'expr                : - '$2'.
+expr  -> '+'expr                : + '$2'.
+
+%% Logical operators
+expr  -> expr 'and' expr        : '$1' and '$3'.
+expr  -> expr 'or' expr         : '$1' or '$3'.
+expr  -> expr 'andalso' expr    : '$1' andalso '$3'.
+expr  -> expr 'orelse' expr     : '$1' orelse '$3'.
 
 word_or_atom ->  word      : list_to_atom(extract_string('$1')).
 word_or_atom ->  atom      : extract_string('$1').

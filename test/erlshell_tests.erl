@@ -28,7 +28,20 @@ cmd1_test() ->
        {"lists:max(lists:seq(1,3))",     3},
        {"X = Y = -1",                    -1},
        {"X",                             -1},
-       {"lists:flatten(io_lib:format(\"~p\", [lists:max([1,3])]))",       "3"}]).
+       {"lists:flatten(io_lib:format(\"~p\", [lists:max([1,3])]))",       "3"},
+
+       %% Logical operators
+       {"2 =:= 2",                       true},
+       {"2 =:= 2.0",                     false},
+       {"2 == 2.0",                      true},
+       {"2 =/= 2.0",                     true},
+       {"2 < 2.1",                       true},
+       {"2 =< 2.0",                      true},
+       {"2 > 1.1",                       true},
+       {"2 >= 2.0",                      true},
+       {"true and true",                 true},
+       {"true orelse false",             true}
+      ]).
 
 shell_default_test() ->
     erlshell:store_shell_commands(),
