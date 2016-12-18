@@ -61,8 +61,19 @@ get_number({number, _Line, V}) -> V.
 
 store_var(Key, Value) ->
     Vars = get_vars(),
-    erlang:put(?VARS, dict:store(Key, Value, Vars)),
-    Value.
+    case dict:find(Key, Vars) of
+        error -> 
+            erlang:put(?VARS, dict:store(Key, Value, Vars)),
+            Value;
+        {ok, V} when V =:= Value ->
+            %% Variable is already used, but stores the same value
+            V;
+        {ok, V} ->
+            %% Variable is already used, but it has an other value.
+            %% Throw an exception
+            throw(lists:flatten(io_lib:format(
+                                "no match of right hand side value ~p", [V])))
+    end.
 
 get_var(Key) ->
     case dict:find(Key, get_vars()) of

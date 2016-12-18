@@ -26,6 +26,8 @@ cmd1_test() ->
        {"B = 100 - -A",                  111},
        {"L = lists:seq(1,3)",            [1,2,3]},
        {"lists:max(lists:seq(1,3))",     3},
+       {"X = Y = -1",                    -1},
+       {"X",                             -1},
        {"lists:flatten(io_lib:format(\"~p\", [lists:max([1,3])]))",       "3"}]).
 
 shell_default_test() ->
