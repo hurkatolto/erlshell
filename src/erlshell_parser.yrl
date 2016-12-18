@@ -77,7 +77,6 @@ get_vars() ->
     end.
 
 call_function(Mod, Function, Parameters)  ->
-    io:format("~p ~p call_function: '~p' ~n", [?MODULE, ?LINE, call_function]),
     erlang:apply(Mod, Function, Parameters).
 
 %%
@@ -85,8 +84,6 @@ call_function(Mod, Function, Parameters)  ->
 %% try user_default. If function is not even in that module throw an exception.
 %%
 call_function(Function, Parameters)  ->
-    io:format("~p ~p Parameters: '~p' ~n", [?MODULE, ?LINE, Parameters]),
-    io:format("~p ~p call_function: '~p' ~n", [?MODULE, ?LINE, call_function]),
     PLength = length(Parameters),
     case lists:member({Function, PLength}, erlang:get(shell_default_functions)) of
         true ->
