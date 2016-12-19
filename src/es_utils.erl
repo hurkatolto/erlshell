@@ -19,6 +19,7 @@
          extract_string/1,
          extract_atom/1,
          del_var/1,
+         del_vars/0,
          'andalso'/2,
          'orelse'/2]).
 
@@ -68,6 +69,11 @@ del_var(Key) ->
             erlang:put(?VARS, dict:erase(Key, Vars)),
             ok
     end.
+
+-spec del_vars() -> ok.
+del_vars() ->
+    erlang:put(?VARS, dict:new()),
+    ok.
 
 -spec call_function(module(), atom(), list(term())) -> any().
 call_function(Mod, Function, Parameters)  ->

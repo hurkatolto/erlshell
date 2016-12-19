@@ -1,10 +1,10 @@
-Nonterminals expr parameters word_or_atom.
+Nonterminals command expr parameters word_or_atom.
 
 Terminals '=' '+' '-' '*' '/' '(' ')' ',' ':' '[' ']' '{' '}' '<' '>'
           '=:=' '==' '=/=' '>=' '=<' number 'andalso' 'orelse' 'and' 'or' 
           word string atom var 'f'.
 
-Rootsymbol expr.
+Rootsymbol command.
 
 Expect 2.
 
@@ -20,7 +20,9 @@ Left    80    '*' '/'.
 Left    90    ','.
 Left    100   ':'.
 
-%% Expressions
+command -> '$empty'                    : ok.
+command -> expr                        : '$1'.
+command -> expr ',' command            : '$3'.
 
 %% List expressions
 expr  ->       string                  : es_utils:extract_string('$1').
@@ -45,6 +47,7 @@ expr -> number                 : es_utils:get_number('$1').
 expr -> word                   : list_to_atom(es_utils:extract_atom('$1')).
 expr -> var                    : es_utils:get_var('$1').
 expr -> 'f' '(' var ')'        : es_utils:del_var('$3').
+expr -> 'f' '(' ')'            : es_utils:del_vars().
 expr -> expr '==' expr         : '$1' == '$3'.
 expr -> expr '=:=' expr        : '$1' =:= '$3'.
 expr -> expr '=/=' expr        : '$1' =/= '$3'.

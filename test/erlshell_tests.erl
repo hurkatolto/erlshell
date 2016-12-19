@@ -33,6 +33,10 @@ cmd1_test() ->
        {"X = Y = -1",                    -1},
        {"X",                             -1},
        {"lists:flatten(io_lib:format(\"~p\", [lists:max([1,3])]))",       "3"},
+       {"f()",                           ok},
+       {"A=1, B=2",                      2},
+       {"A",                             1},
+       {"B",                             2},
 
        %% Logical operators
        {"2 =:= 2",                       true},
@@ -50,7 +54,9 @@ cmd1_test() ->
        {"F = 999",                       999},
        {"F",                             999},
        {"f(F)",                          ok},
-       {"F = 5",                         5}
+       {"F = 5",                         5},
+       {"f()",                           ok},
+       {"F = 2",                         2}
       ]).
 
 shell_default_test() ->

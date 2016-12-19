@@ -18,6 +18,7 @@ generate: 	compile
 	./rebar compile escriptize
 
 clean:
+	rm -rf .eunit
 	rm -rf `find . -name *.beam`
 
 dialyze:	compile
@@ -35,5 +36,5 @@ xref:		compile
 
 check: xref dialyze eunit
 
-etags:
+etags: clean
 	find . -name \*.[eh]rl | ./erltags -s -f -o tags
