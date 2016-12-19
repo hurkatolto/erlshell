@@ -1,23 +1,35 @@
 Nonterminals expr parameters word_or_atom.
 
-Terminals '=' '+' '-' '*' '/' '(' ')' ',' ':' '[' ']' '{' '}' '<' '>' number 
-          'andalso' 'orelse' 'and' 'or' word string atom var 'f'.
+Terminals '=' '+' '-' '*' '/' '(' ')' ',' ':' '[' ']' '{' '}' '<' '>'
+          '=:=' '==' '=/=' '>=' '=<' number 'andalso' 'orelse' 'and' 'or' 
+          word string atom var 'f'.
 
 Rootsymbol expr.
 
 Expect 2.
 
-Right   0    '='.
-Left    1    '('.
-Left    2    ')'.
-Left    3    '['.
-Left    4    ']'.
-Left    6    '+'.
-Left    10   '-'.
-Left    15   '*'.
-Left    20   '/'.
-Left    25   ','.
-Left    30   ':'.
+Right   0     '='.
+Left    10    '('.
+Left    20    ')'.
+Left    30    '['.
+Left    40    ']'.
+Left    50    'orelse'.
+Left    60    'or'.
+Left    70    'andalso'.
+Left    80    'and'.
+Left    90    '>'.
+Left    100   '<'.
+Left    110   '=<'.
+Left    120   '>='.
+Left    130   '=:='.
+Left    140   '=='.
+Left    150   '=/='.
+Left    160    '+'.
+Left    170   '-'.
+Left    180   '*'.
+Left    190   '/'.
+Left    200   ','.
+Left    210   ':'.
 
 %% Expressions
 
@@ -39,31 +51,35 @@ parameters ->  expr                    : ['$1'].
 parameters ->  expr ',' parameters     : ['$1' | '$3'].
 
 %% handling expressions with the most basic operators
-expr  -> '(' expr ')'           : '$2'.
-expr  -> number                 : es_utils:get_number('$1').
-expr  -> word                   : list_to_atom(es_utils:extract_atom('$1')).
-expr  -> var                    : es_utils:get_var('$1').
-expr  -> 'f' '(' var ')'        : es_utils:del_var('$3').
-expr  -> expr '=' '=' expr      : '$1' == '$4'.
-expr  -> expr '=' ':' '=' expr  : '$1' =:= '$5'.
-expr  -> expr '=' '/' '=' expr  : '$1' =/= '$5'.
-expr  -> expr '<' expr          : '$1' < '$3'.
-expr  -> expr '>' expr          : '$1' > '$3'.
-expr  -> expr '>' '=' expr      : '$1' >= '$4'.
-expr  -> expr '=' '<' expr      : '$1' =< '$4'.
-expr  -> expr '+' expr          : '$1' + '$3'.
-expr  -> expr '-' expr          : '$1' - '$3'.
-expr  -> expr '*' expr          : '$1' * '$3'.
-expr  -> expr '/' expr          : '$1' / '$3'.
-expr  -> var  '=' expr          : es_utils:store_var('$1', '$3').
-expr  -> '-'expr                : - '$2'.
-expr  -> '+'expr                : + '$2'.
+expr -> '(' expr ')'           : '$2'.
+expr -> number                 : es_utils:get_number('$1').
+expr -> word                   : list_to_atom(es_utils:extract_atom('$1')).
+expr -> var                    : es_utils:get_var('$1').
+expr -> 'f' '(' var ')'        : es_utils:del_var('$3').
+expr -> expr '==' expr         : '$1' == '$3'.
+expr -> expr '=:=' expr        : '$1' =:= '$3'.
+expr -> expr '=/=' expr        : '$1' =/= '$3'.
+expr -> expr '<' expr          : '$1' < '$3'.
+expr -> expr '>' expr          : '$1' > '$3'.
+expr -> expr '>=' expr         : '$1' >= '$3'.
+expr -> expr '=<' expr         : '$1' =< '$3'.
+expr -> expr '+' expr          : '$1' + '$3'.
+expr -> expr '-' expr          : '$1' - '$3'.
+expr -> expr '*' expr          : '$1' * '$3'.
+expr -> expr '/' expr          : '$1' / '$3'.
+expr -> var  '=' expr          : es_utils:store_var('$1', '$3').
+expr -> '-'expr                : - '$2'.
+expr -> '+'expr                : + '$2'.
 
 %% Logical operators
 expr  -> expr 'and' expr        : '$1' and '$3'.
 expr  -> expr 'or' expr         : '$1' or '$3'.
-expr  -> expr 'andalso' expr    : '$1' andalso '$3'.
-expr  -> expr 'orelse' expr     : '$1' orelse '$3'.
+%% TODO: looks like this shortcircuit operator does not work.
+%%       even with this case the expression '$3' is evaluated before the andalso
+%%       operator is being called. Investigate if there is an option for yecc
+%%       to change the order of the evaluation!
+expr  -> expr 'andalso' expr    : es_utils:'andalso'('$1', '$3').
+expr  -> expr 'orelse' expr     : es_utils:'orelse'('$1', '$3').
 
 word_or_atom ->  word      : list_to_atom(es_utils:extract_string('$1')).
 word_or_atom ->  atom      : es_utils:extract_string('$1').

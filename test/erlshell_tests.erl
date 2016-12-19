@@ -10,7 +10,8 @@ cmd_test_() ->
      fun setup/0,
      fun cleanup/1,
      [fun cmd1_test/0,
-      fun shell_default_test/0]}.
+      fun shell_default_test/0,
+      fun operator_precedence_test/0]}.
 
 setup() ->
     es_utils:store_shell_commands(),
@@ -59,6 +60,21 @@ shell_default_test() ->
       [{"help()",                   true},
        {"i()",                      ok},
        {"uptime()",                 ok}
+      ]).
+
+operator_precedence_test() ->
+    es_utils:store_shell_commands(),
+    eval_lines(
+      1,
+      [{"1 + -1",                                       0},
+       {"3 * 2 - 1",                                    5},
+       {"-1 + 3 * -2",                                  -7},
+       {"true =:= true and false",                      false},
+       {"3>2 and 2=<1",                                 false},
+       {"3>2 and 2>3 or 2==2 and 10=:=15",              false},
+       {"C = K = 3>=2",                                 true},
+       {"C",                                            true},
+       {"3*2>=10 andalso 3/2",                          false}
       ]).
 
 eval_lines(_LC, []) ->

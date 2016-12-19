@@ -3,7 +3,7 @@ Definitions.
 
 INT         = [0-9]+
 FLOAT       = [0-9]*\.[0-9]+
-OPERATOR    = [\+\-\*/\(\)=:,\[\]\{\}"<>f]|andalso|and|orelse|or
+OPERATOR    = ==|=:=|=/=|>=|=<|andalso|and|orelse|or|[\+\-\*/\(\)=:,\[\]\{\}"<>f]
 
 Rules.
 

@@ -18,7 +18,9 @@
          call_function/2,
          extract_string/1,
          extract_atom/1,
-         del_var/1]).
+         del_var/1,
+         'andalso'/2,
+         'orelse'/2]).
 
 -define(VARS, calc_vars).
 
@@ -117,6 +119,20 @@ get_command_result(LC) ->
         {ok, Result} ->
             io:format("~p ~p Result: '~p' ~n", [?MODULE, ?LINE, Result]),
             Result
+    end.
+
+-spec 'andalso'(boolean(), boolean()) -> any().
+'andalso'(A, B) ->
+    case A of
+        true -> B;
+        false -> false
+    end.
+
+-spec 'orelse'(boolean(), boolean()) -> any().
+'orelse'(A, B) ->
+    case A of
+        true -> true;
+        false -> B
     end.
 
 %%%=============================================================================
