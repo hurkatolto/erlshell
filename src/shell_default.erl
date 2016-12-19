@@ -25,15 +25,17 @@
 
 -export([help/0,lc/1,c/1,c/2,nc/1,nl/1,l/1,i/0,pid/3,i/3,m/0,m/1,
          memory/0,memory/1,uptime/0,
-	 erlangrc/1,bi/1, regs/0, flush/0,pwd/0,ls/0,ls/1,cd/1, 
+         erlangrc/1,bi/1, regs/0, flush/0,pwd/0,ls/0,ls/1,cd/1,
          y/1, y/2,
-	 xm/1, bt/1, q/0,
-	 ni/0, nregs/0]).
+         xm/1, bt/1, q/0,
+         ni/0, nregs/0]).
 
 -export([ih/0,iv/0,im/0,ii/1,ii/2,iq/1,ini/1,ini/2,inq/1,ib/2,ib/3,
-	 ir/2,ir/3,ibd/2,ibe/2,iba/3,ibc/3,
-	 ic/0,ir/1,ir/0,il/0,ipb/0,ipb/1,iaa/1,iaa/2,ist/1,ia/1,ia/2,ia/3,
-	 ia/4,ip/0]).
+         ir/2,ir/3,ibd/2,ibe/2,iba/3,ibc/3,
+         ic/0,ir/1,ir/0,il/0,ipb/0,ipb/1,iaa/1,iaa/2,ist/1,ia/1,ia/2,ia/3,
+         ia/4,ip/0]).
+
+-export([v/1]).
 
 -import(io, [format/1]).
 
@@ -43,7 +45,7 @@ help() ->
     format("e(N)       -- repeat the expression in query <N>\n"),
     format("f()        -- forget all variable bindings\n"),
     format("f(X)       -- forget the binding of variable X\n"),
-    format("h()        -- history\n"),    
+    format("h()        -- history\n"),
     format("history(N) -- set how many previous commands to keep\n"),
     format("results(N) -- set how many previous command results to keep\n"),
     format("catch_exception(B) -- how exceptions are handled\n"),
@@ -132,3 +134,9 @@ iv()            -> calli(iv, []).
 
 calli(F, Args) ->
     c:appcall(debugger, i, F, Args).
+
+%%
+%% get the result of the Nth shell command
+%%
+v(LC) ->
+    es_utils:get_command_result(LC).

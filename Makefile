@@ -34,3 +34,6 @@ xref:		compile
 	./filter_output.sh xref_output.txt xref_filter_warnings.txt
 
 check: xref dialyze eunit
+
+etags:
+	find . -name \*.[eh]rl | ./erltags -s -f -o tags

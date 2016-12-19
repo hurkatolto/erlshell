@@ -85,8 +85,7 @@ store_var(Key, Value) ->
         {ok, V} ->
             %% Variable is already used, but it has an other value.
             %% Throw an exception
-            throw(lists:flatten(io_lib:format(
-                                "no match of right hand side value ~p", [V])))
+            es_utils:exception("no match of right hand side value ~p", [V])
     end.
 
 get_var(Key) ->
@@ -118,9 +117,8 @@ call_function(Function, Parameters)  ->
                 true ->
                     erlang:apply(user_default, Function, Parameters);
                 false ->
-                    throw(lists:flatten(io_lib:format(
-                                            "undefined shell command ~p/~p",
-                                            [Function, PLength])))
+                    es_utils:exception("undefined shell command ~p/~p",
+                                       [Function, PLength])
             end
     end.
 

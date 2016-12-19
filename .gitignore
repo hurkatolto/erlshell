@@ -7,3 +7,6 @@ erlshell
 .dialyzer_plt
 .eunit
 .rebar/
+tags
+erltags
+ebin/erlshell.app

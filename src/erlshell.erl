@@ -1,28 +1,28 @@
 -module(erlshell).
 
 -export([main/1,
-         exec_line/1,
-         store_shell_commands/0]).
+         exec_line/2]).
 
 main(_Opts) ->
-    store_shell_commands(),
+    es_utils:store_shell_commands(),
     read_lines(1).
 
 read_lines(L) ->
     case io:get_line(integer_to_list(L) ++ "> ") of
         eof -> ok;
         Line ->
-            exec_line(Line),
+            exec_line(Line, L),
             read_lines(L + 1)
     end.
 
-exec_line(Line0) ->
+exec_line(Line0, LineCount) ->
     try
         Line = chunk_nl(Line0),
         {ok, Tokens, _} = erlshell_lexer:string(Line),
         io:format("Tokens = ~p\n", [Tokens]),
         {ok, Result} = erlshell_parser:parse(Tokens),
         io:format("~p\n", [Result]),
+        es_utils:store_command_result(LineCount, Result),
         {ok, Result}
     catch _:Error ->
         io:format("Error: ~p,\nStack = ~p\n", [Error, erlang:get_stacktrace()])
@@ -32,14 +32,4 @@ chunk_nl(L) ->
     case string:tokens(L, "\n") of
         [Line] -> Line;
         [] -> []
-    end.
-
-store_shell_commands() ->
-    erlang:put(shell_default_functions, get_module_functions(shell_default)),
-    erlang:put(user_default_function, get_module_functions(user_default)).
-
-get_module_functions(Module) ->
-    case catch Module:module_info(exports) of
-        {'EXIT', _} -> [];
-        Functions -> Functions
     end.

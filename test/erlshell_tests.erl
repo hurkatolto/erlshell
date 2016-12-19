@@ -13,15 +13,15 @@ cmd_test_() ->
       fun shell_default_test/0]}.
 
 setup() ->
-    erlshell:store_shell_commands(),
+    es_utils:store_shell_commands(),
     [].
 
 cleanup(_) ->
     ok.
 
 cmd1_test() ->
-    lists:foreach(
-      fun eval_line/1,
+    eval_lines(
+      1,
       [{"A = 12 +- 1",                   11},
        {"B = 100 - -A",                  111},
        {"L = lists:seq(1,3)",            [1,2,3]},
@@ -44,15 +44,22 @@ cmd1_test() ->
       ]).
 
 shell_default_test() ->
-    erlshell:store_shell_commands(),
-    lists:foreach(
-      fun eval_line/1,
+    es_utils:store_shell_commands(),
+    eval_lines(
+      1,
       [{"help()",                   true},
        {"i()",                      ok},
-       {"uptime()",                 ok}]).
+       {"uptime()",                 ok}
+      ]).
 
-eval_line({Cmd,Expected}) ->
-    try erlshell:exec_line(Cmd) of
+eval_lines(_LC, []) ->
+    ok;
+eval_lines(LineCount, [CmdAndResult | T]) ->
+    eval_line(CmdAndResult, LineCount),
+    eval_lines(LineCount + 1, T).
+
+eval_line({Cmd,Expected}, LineCount) ->
+    try erlshell:exec_line(Cmd, LineCount) of
         {ok, Expected} -> ok;
         Other ->
             display_error_and_halt(Cmd, Expected, Other)
