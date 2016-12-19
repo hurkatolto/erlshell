@@ -1,7 +1,7 @@
 Nonterminals expr parameters word_or_atom.
 
 Terminals '=' '+' '-' '*' '/' '(' ')' ',' ':' '[' ']' '{' '}' '<' '>' number 
-          'andalso' 'orelse' 'and' 'or' word string atom var.
+          'andalso' 'orelse' 'and' 'or' word string atom var 'f'.
 
 Rootsymbol expr.
 
@@ -43,6 +43,7 @@ expr  -> '(' expr ')'           : '$2'.
 expr  -> number                 : es_utils:get_number('$1').
 expr  -> word                   : list_to_atom(es_utils:extract_atom('$1')).
 expr  -> var                    : es_utils:get_var('$1').
+expr  -> 'f' '(' var ')'        : es_utils:del_var('$3').
 expr  -> expr '=' '=' expr      : '$1' == '$4'.
 expr  -> expr '=' ':' '=' expr  : '$1' =:= '$5'.
 expr  -> expr '=' '/' '=' expr  : '$1' =/= '$5'.

@@ -20,9 +20,12 @@ cleanup(_) ->
     ok.
 
 cmd1_test() ->
+    es_utils:store_shell_commands(),
     eval_lines(
       1,
       [{"A = 12 +- 1",                   11},
+       %% value of the previous command
+       {"v(1) + 1",                      12},
        {"B = 100 - -A",                  111},
        {"L = lists:seq(1,3)",            [1,2,3]},
        {"lists:max(lists:seq(1,3))",     3},
@@ -40,7 +43,13 @@ cmd1_test() ->
        {"2 > 1.1",                       true},
        {"2 >= 2.0",                      true},
        {"true and true",                 true},
-       {"true orelse false",             true}
+       {"true orelse false",             true},
+
+       %% Test deleting variable
+       {"F = 999",                       999},
+       {"F",                             999},
+       {"f(F)",                          ok},
+       {"F = 5",                         5}
       ]).
 
 shell_default_test() ->

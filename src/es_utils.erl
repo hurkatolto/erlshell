@@ -17,7 +17,8 @@
          call_function/3,
          call_function/2,
          extract_string/1,
-         extract_atom/1]).
+         extract_atom/1,
+         del_var/1]).
 
 -define(VARS, calc_vars).
 
@@ -53,6 +54,17 @@ get_var(Key) ->
     case dict:find(Key, get_vars()) of
         error -> throw({no_variable, Key});
         {ok, Value} -> Value
+    end.
+
+-spec del_var(term()) -> any().
+del_var(Key) ->
+    Vars = get_vars(),
+    case dict:find(Key, Vars) of
+        error ->
+            throw({no_variable, Key});
+        {ok, _Value} ->
+            erlang:put(?VARS, dict:erase(Key, Vars)),
+            ok
     end.
 
 -spec call_function(module(), atom(), list(term())) -> any().
