@@ -9,27 +9,16 @@ Rootsymbol expr.
 Expect 2.
 
 Right   0     '='.
-Left    10    '('.
-Left    20    ')'.
-Left    30    '['.
-Left    40    ']'.
-Left    50    'orelse'.
-Left    60    'or'.
-Left    70    'andalso'.
-Left    80    'and'.
-Left    90    '>'.
-Left    100   '<'.
-Left    110   '=<'.
-Left    120   '>='.
-Left    130   '=:='.
-Left    140   '=='.
-Left    150   '=/='.
-Left    160    '+'.
-Left    170   '-'.
-Left    180   '*'.
-Left    190   '/'.
-Left    200   ','.
-Left    210   ':'.
+Left    10    '(' ')'.
+Left    20    '[' ']'.
+Left    30    'orelse' 'or'.
+Left    40    'andalso' 'and'.
+Left    50    '>' '<' '=<' '>='.
+Left    60    '=:=' '==' '=/='.
+Left    70    '+' '-'.
+Left    80    '*' '/'.
+Left    90    ','.
+Left    100   ':'.
 
 %% Expressions
 
