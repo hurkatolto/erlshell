@@ -19,7 +19,7 @@ Rules.
 {INT}                 : {token, {number, TokenLine, list_to_integer(TokenChars)}}.
 {FLOAT}               : {token, {number, TokenLine, to_float(TokenChars)}}.
 [\s\t\r]+             : skip_token.
-[\n]+                 : {token, {newline, TokenLine}}.
+[\n]+                 : skip_token.
 
 Erlang code.
 

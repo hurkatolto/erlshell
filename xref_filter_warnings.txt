@@ -21,4 +21,5 @@ erlshell_parser:sqrt/1 is unused export.+
 shell_default.erl:.* Warning: shell_default:.+ is unused export.+
 
 ## Called only from test
-.*erlshell.erl:.+Warning: erlshell:exec_line/2 is unused export.*
+.*erlshell.erl:.+Warning: erlshell:exec_line/3 is unused export.*
+.*erlshell.erl:.+Warning: erlshell:get_commands/1 is unused export.*
